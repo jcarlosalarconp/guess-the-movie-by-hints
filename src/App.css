@@ -1,14 +1,21 @@
-*{
+* {
     font-family: system-ui;
 }
 
-body{
+body {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-h1{
-    color:azure;
+h1 {
+    color: azure;
     text-align: center;
+}
+
+.hint {
+    background-color: #030303;
+    display: block;
+    border-radius: 10px;
+    color: azure;
 }
