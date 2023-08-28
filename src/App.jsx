@@ -1,11 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import movieJSON from './movie.json'
+import moviesJSON from './movies.json'
+import { Search } from './components/Icons'
+
 import './App.css'
+import debounce from 'just-debounce-it'
+import { SearchBar } from "./components/SearchBar";
+import { SearchResultsList } from "./components/SearchResultsList";
 
 function App() {
 
-  const [movie, setMovie] = useState({})
+  const [movie, setMovie] = useState(movieJSON)
   const [score, setScore] = useState(0)
+
+  const [searchedMovies, setSearchedMovies] = useState([])
+  const [selectedMovie, setSelectedMovie] = useState({})
+
+  const [inputValue, setInputValue] = useState('')
+
+  const getMovies = () => {
+    return moviesJSON
+  }
+
+  const debouncedGetMovies = useCallback(
+    debounce(query => {
+      getMovies({ query })
+    }, 300)
+    , [getMovies]
+  )
 
   const handleClick = (e) => {
     e.target.style.display = 'none'
@@ -45,35 +67,52 @@ function App() {
     }
   }
 
+  const onResultClick = (e, result) => {
+    e.preventDefault()
+    setSelectedMovie(result)
+    setInputValue(result.title)
+    setSearchedMovies([])
+  }
+
   return (
     <>
       <h1>Guess the Movie by Hints</h1>
       <div style={{ display: 'flex' }}>
         <h1>SCORE:</h1>
-        <h1 style={{ color: 'red', marginLeft: '10px'}}>{score}</h1>
+        <h1 style={{ color: 'red', marginLeft: '10px' }}>{score}</h1>
       </div>
+
+      <form>
+        <div>
+          <SearchBar setResults={setSearchedMovies} inputValue={inputValue} setInputValue={setInputValue} />
+          {searchedMovies && searchedMovies.length > 0 && <SearchResultsList results={searchedMovies} onResultClick={onResultClick} />}
+        </div>
+        <button type='submit'><Search /></button>
+
+      </form>
+
       <article className='movie-card'>
         <span id='title-hint' className='hint' onClick={handleClick} style={{ height: '40px' }}>
           Click here to unlock the title (25pts)
         </span>
-        <h2 id='title' style={{ display: 'none' }}>{movieJSON.Title}</h2>
+        <h2 id='title' style={{ display: 'none' }}>{movie.Title}</h2>
 
         <span id='genre-hint' className='hint' onClick={handleClick} style={{ height: '40px', width: '300px' }}>
           Click here to unlock the genre (5pts)
         </span>
-        <h4 id='genre' style={{ display: 'none' }}>{movieJSON.Genre}</h4>
+        <h4 id='genre' style={{ display: 'none' }}>{movie.Genre}</h4>
 
         <div style={{ display: 'flex' }}>
           <span id='poster-hint' className='hint' onClick={handleClick} style={{ height: '444px', width: '300px' }}>
             Click here to unlock the poster (50pts)
           </span>
-          <img id='poster' style={{ display: 'none' }} src={movieJSON.Poster} />
+          <img id='poster' style={{ display: 'none' }} src={movie.Poster} />
           <div style={{ marginLeft: '20px', width: '500px' }}>
 
             <span id='synopsis-hint' className='hint' onClick={handleClick} style={{ height: '150px' }}>
               Click here to unlock the synopsis (30pts)
             </span>
-            <p id='synopsis' style={{ display: 'none' }}  >{movieJSON.Plot}</p>
+            <p id='synopsis' style={{ display: 'none' }}  >{movie.Plot}</p>
 
 
 
@@ -84,10 +123,10 @@ function App() {
               <div id='actors' style={{ display: 'none' }}>
                 <ul>
                   {
-                    movieJSON.Actors.split(', ').map(actor => {
+                    movie.Actors.split(', ').map(actor => {
                       return (
                         <>
-                          <li>{actor}</li>
+                          <li key={movie.Actors.indexOf(actor)}>{actor}</li>
                         </>
                       )
                     })
@@ -99,7 +138,7 @@ function App() {
                 Click here to unlock the director (40pts)
               </span>
               <div id='director' style={{ display: 'none' }}>
-                <p>{movieJSON.Director}</p>
+                <p>{movie.Director}</p>
               </div>
             </div>
           </div>
@@ -108,12 +147,12 @@ function App() {
           <span id='year-hint' className='hint' onClick={handleClick} style={{ height: '50px', width: '80px' }}>
             Click here to unlock the year (20pts)
           </span>
-          <p id='year' style={{ display: 'none' }}>{movieJSON.Year}</p>
+          <p id='year' style={{ display: 'none' }}>{movie.Year}</p>
 
           <span id='duration-hint' className='hint' onClick={handleClick} style={{ height: '50px', width: '80px' }}>
             Click here to unlock the duration  (10pts)
           </span>
-          <p id='duration' style={{ marginLeft: '10px', display: 'none' }}>{movieJSON.Runtime}</p>
+          <p id='duration' style={{ marginLeft: '10px', display: 'none' }}>{movie.Runtime}</p>
         </div>
       </article>
     </>
