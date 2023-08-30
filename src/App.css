@@ -19,3 +19,14 @@ h1 {
     border-radius: 10px;
     color: azure;
 }
+
+.final-screen {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+}

@@ -7,6 +7,8 @@ import './App.css'
 import debounce from 'just-debounce-it'
 import { SearchBar } from "./components/SearchBar";
 import { SearchResultsList } from "./components/SearchResultsList";
+import { FinalScreen } from './components/FinalScreen'
+import confetti from 'canvas-confetti'
 
 function App() {
 
@@ -17,6 +19,8 @@ function App() {
   const [selectedMovie, setSelectedMovie] = useState({})
 
   const [inputValue, setInputValue] = useState('')
+  const [finalScreen, setFinalScreen] = useState(false)
+
 
   const getMovies = () => {
     return moviesJSON
@@ -78,7 +82,8 @@ function App() {
     if (!inputValue || !selectedMovie) return
 
     if (selectedMovie.id === movie.imdbID) {
-      alert('You win! The movie is ' + movie.Title)
+      setFinalScreen(true)
+      confetti()
     } else {
       alert('Incorrect... Try again. (15pts)')
       setScore(score + 15)
@@ -164,6 +169,8 @@ function App() {
           <p id='duration' style={{ marginLeft: '10px', display: 'none' }}>{movie.Runtime}</p>
         </div>
       </article>
+
+      {finalScreen ? <FinalScreen movie={movie} score={score}/> : ''}
     </>
   )
 }
