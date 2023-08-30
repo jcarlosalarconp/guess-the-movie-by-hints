@@ -74,6 +74,18 @@ function App() {
     setSearchedMovies([])
   }
 
+  const checkMovie = () => {
+    if (!inputValue || !selectedMovie) return
+
+    if (selectedMovie.id === movie.imdbID) {
+      alert('You win! The movie is ' + movie.Title)
+    } else {
+      alert('Incorrect... Try again. (15pts)')
+      setScore(score + 15)
+      setInputValue('')
+      setSelectedMovie({})
+    }
+  }
   return (
     <>
       <h1>Guess the Movie by Hints</h1>
@@ -82,14 +94,11 @@ function App() {
         <h1 style={{ color: 'red', marginLeft: '10px' }}>{score}</h1>
       </div>
 
-      <form>
         <div>
           <SearchBar setResults={setSearchedMovies} inputValue={inputValue} setInputValue={setInputValue} />
           {searchedMovies && searchedMovies.length > 0 && <SearchResultsList results={searchedMovies} onResultClick={onResultClick} />}
         </div>
-        <button type='submit'><Search /></button>
-
-      </form>
+        <button onClick={checkMovie}><Search /></button>
 
       <article className='movie-card'>
         <span id='title-hint' className='hint' onClick={handleClick} style={{ height: '40px' }}>
