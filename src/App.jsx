@@ -20,6 +20,8 @@ function App() {
 
   const [inputValue, setInputValue] = useState('')
   const [finalScreen, setFinalScreen] = useState(false)
+  const [attemptedMovies, setAttemptedMovies] = useState([])
+
 
 
   const getMovies = () => {
@@ -85,10 +87,15 @@ function App() {
       setFinalScreen(true)
       confetti()
     } else {
-      alert('Incorrect... Try again. (15pts)')
-      setScore(score + 15)
-      setInputValue('')
-      setSelectedMovie({})
+      if(!attemptedMovies.find(item => item.id === selectedMovie.id)){
+        alert('Incorrect... Try again. (15pts)')
+        setScore(score + 15)
+        setInputValue('')
+        setSelectedMovie({})
+        setAttemptedMovies(attemptedMovies => [...attemptedMovies, selectedMovie])
+      }else{
+        alert('You almost tried this movie')
+      }
     }
   }
   return (
@@ -99,11 +106,11 @@ function App() {
         <h1 style={{ color: 'red', marginLeft: '10px' }}>{score}</h1>
       </div>
 
-        <div>
-          <SearchBar setResults={setSearchedMovies} inputValue={inputValue} setInputValue={setInputValue} />
-          {searchedMovies && searchedMovies.length > 0 && <SearchResultsList results={searchedMovies} onResultClick={onResultClick} />}
-        </div>
-        <button onClick={checkMovie}><Search /></button>
+      <div>
+        <SearchBar setResults={setSearchedMovies} inputValue={inputValue} setInputValue={setInputValue} />
+        {searchedMovies && searchedMovies.length > 0 && <SearchResultsList results={searchedMovies} onResultClick={onResultClick} />}
+      </div>
+      <button onClick={checkMovie}><Search /></button>
 
       <article className='movie-card'>
         <span id='title-hint' className='hint' onClick={handleClick} style={{ height: '40px' }}>
@@ -170,7 +177,19 @@ function App() {
         </div>
       </article>
 
-      {finalScreen ? <FinalScreen movie={movie} score={score}/> : ''}
+      <ul>
+        {
+          attemptedMovies.map(attemptedMovie => {
+            return (
+              <>
+                <li key={attemptedMovie.imdbID}>❌{attemptedMovie.title}</li>
+              </>
+            )
+          })
+        }
+      </ul>
+
+      {finalScreen ? <FinalScreen movie={movie} score={score} /> : ''}
     </>
   )
 }
